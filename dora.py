@@ -3,15 +3,6 @@ import sys
 import dbt_manifest_parser.dbt_manifest_parser as parser
 
 
-
-
-
-
-
-
-
-
-
 # --- Esecuzione Principale  ---
 
 # sys.argv[0] = nome script
@@ -37,7 +28,7 @@ if __name__ == "__main__":
             try:
                 # Scrittura su file JSON
                 with open(output_file_name, 'w', encoding='utf-8') as f:
-                    json.dump(full_lineage_list, f, indent=2, ensure_ascii=False)
+                    json.dump(full_lineage_list, f, indent=2, ensure_ascii=True)
                 print("   -> Completed.")
             except IOError as e:
                 print(f"   -> ERROR: {e}")

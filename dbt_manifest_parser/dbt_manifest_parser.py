@@ -1,6 +1,5 @@
 import ijson
-import sys
-import json
+import os
 
 def build_model_index(manifest_path):
     """
@@ -16,7 +15,9 @@ def build_model_index(manifest_path):
             for node_id, node_data in nodes_iterator:
                 if node_data.get('resource_type') == 'model':
                     dependencies = node_data.get('depends_on', {}).get('nodes', [])
-                    compiled_code = node_data.get('compiled_code') or node_data.get('compiled_sql', 'SQL code not available.')
+                    compiled_code = node_data.get('raw_code','Code not available')
+                    #compiled_code = node_data.get('compiled_code') or node_data.get('compiled_sql', 'SQL code not available.')
+                    compiled_code= compiled_code.replace('\r\n',os.linesep)
                     model_index[node_id] = {
                         'depends_on_nodes': dependencies,
                         'compiled_code': compiled_code
