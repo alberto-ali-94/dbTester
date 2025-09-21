@@ -1,5 +1,5 @@
 import asyncio
-from write_log import write_log
+from tools.write_log import write_log
 from CheeckyChan.main import Cheecky_Chan
 from DoraExploradora.main import Dora_Exploradora
 
