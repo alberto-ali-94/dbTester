@@ -1,4 +1,4 @@
-_dora/
+_venv/
 list.txt
 test.py
 **/__pycache__

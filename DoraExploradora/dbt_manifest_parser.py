@@ -36,7 +36,7 @@ def build_model_index(manifest_path:str) -> dict:
     This function reads the manifest.json received in input and creates an in-memory index with only the model nodes.
     Every element of the index can be referred through model unique id and contains the deps and SQL code for each model
     """
-    print(f"[Dora Exploradora]: 🔍 Caricamento modelli da '{manifest_path}'...\n")
+    print(f"🤖 [Dora Exploradora]: 🔍 Caricamento modelli da '{manifest_path}'...\n")
     model_index = {}
     try:
         with open(manifest_path, 'rb') as f:
@@ -52,10 +52,10 @@ def build_model_index(manifest_path:str) -> dict:
                         'compiled_code': compiled_code
                     }
     except FileNotFoundError:
-        print(f"[Dora Exploradora]: ❌ ERRORE: File non trovato: '{manifest_path}'\n")
+        print(f"🤖 [Dora Exploradora]: ❌ ERRORE: File non trovato: '{manifest_path}'\n")
         return None
     except ijson.common.IncompleteJSONError as e:
-        print(f"[Dora Exploradora]: ❌ ERRORE: File JSON non valido {e}")
+        print(f"🤖 [Dora Exploradora]: ❌ ERRORE: File JSON non valido {e}")
         return None
     print(f"[Dora Exploradora]: 🎯 Indice caricato. Trovati {len(model_index)} modelli dbt.")
     return model_index
@@ -65,10 +65,10 @@ def get_full_lineage(model_index: dict, start_model_id: str) -> list:
     Every element of model_index can be referred through model unique id and contains the deps and SQL code for each model.
     This function go through the index "model_index" and finds the full lineage of the given start_model_id
     """
-    print(f"[Dora Exploradora]: 🔍 Elaborazione del lineage per: '{start_model_id}'")
+    print(f"🤖 [Dora Exploradora]: 🔍 Elaborazione del lineage per: '{start_model_id}'")
     
     if start_model_id not in model_index:
-        print(f"""[Dora Exploradora]: ❌ ERRORE: Modello '{start_model_id}' non trovato tra quelli disponibili nel 
+        print(f"""🤖 [Dora Exploradora]: ❌ ERRORE: Modello '{start_model_id}' non trovato tra quelli disponibili nel 
               manifest.""")
         return None
 

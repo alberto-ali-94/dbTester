@@ -1,0 +1,3 @@
+Model ID: model.dlh_dm_emea.EDW__OFA_AP_INVOICE
+Test Proposed: Verify that all records in the 'EDW__OFA_AP_INVOICE' model now have 'COMPANY_CD' equal to '001'. Specifically, check that no other company codes exist in this table. Additionally, perform a row count comparison for 'COMPANY_CD' = '001' before and after the change to ensure consistency, and verify that the row count for any other 'COMPANY_CD' is zero after the change.
+--------------------------------------------------

@@ -1,21 +1,27 @@
+import logging
+logging.getLogger('google_genai.types').setLevel(logging.ERROR)
 from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService
 from google.genai.types import Content, Part
-from .agent import root_agent as InputChecker 
-from datetime import datetime
 import sys
 import os
 import json
+import write_log
 
 
-async def Cheecky_Chan():
+from agent import root_agent as TestAdvisor 
+from datetime import datetime
+
+
+
+async def Testarella(model_id:str,user_query:str):
     # Verifica che la chiave API sia impostata
     if not os.getenv('GOOGLE_API_KEY'):
         print("❌ GOOGLE_API_KEY non impostata!")
         print("   Esegui: export GOOGLE_API_KEY='your-api-key'")
         sys.exit(1)
 
-    APP_NAME = "input_analyzer_app"
+    APP_NAME = "testarella"
     USER_ID = "test_user"
     SESSION_ID = "session_123"
     
@@ -28,25 +34,21 @@ async def Cheecky_Chan():
         user_id=USER_ID,
         session_id=SESSION_ID
     )
-    
-    print(f"🤖 [Cheecky Chan]: ✅ Sessione creata: {session.id}")
+    print("🤖 [Testarella]: 🔄 ELABORAZIONE IN CORSO")
+    #print(f"🤖 [Testarella]: ✅ Sessione creata: {session.id}")
     
     # Configura il runner
     runner = Runner(
-        agent=InputChecker,
+        agent=TestAdvisor,
         app_name=APP_NAME,
         session_service=session_service
     )
     
-    # Ottieni input dall'utente
-    user_input = input("\n🤖 [Cheecky Chan]: 📝 Inserisci la tua query: ")
-    
-    print(f"🤖 [Cheecky Chan]: 🔍 Analisi in corso per: '{user_input}'")
     
     # Crea il contenuto del messaggio
     user_message = Content(
         role="user",
-        parts=[Part(text=user_input)]
+        parts=[Part(text=f"MODEL_ID: {model_id}, USER_QUERY: {user_query}")]
     )
     
     try:
@@ -65,19 +67,23 @@ async def Cheecky_Chan():
                 for part in event.content.parts:
                     if hasattr(part, 'text') and part.text:
                         agent_response.append(part.text)
-                        
-            # Cattura i risultati delle tool calls
-            if hasattr(event, 'tool_call_result'):
-                tool_results.append(event.tool_call_result)
+                    elif hasattr(part, 'function_call'):
+                        pass  # Ignora function calls
+                    elif hasattr(part, 'function_response'):
+                        pass  # Ignora function responses  
+                    elif hasattr(part,'thought_signature'):
+                        pass #ignore thought_signature
+                    # Cattura i risultati delle tool calls
+                    if hasattr(event, 'tool_call_result'):
+                        tool_results.append(event.tool_call_result)
         
         # Recupera lo stato aggiornato della sessione
         updated_session = await session_service.get_session(
             app_name=APP_NAME,
             user_id=USER_ID,
-            session_id=session.id  # Usa session.id invece di SESSION_ID
+            session_id=session.id  
         )
         
-        print("🤖 [Cheecky Chan]: 💾 STATO SALVATO IN SESSIONE:")
         
         if updated_session.state:                
             # L'output_key="analysis_result" nell'agente salva automaticamente la risposta
@@ -99,38 +105,19 @@ async def Cheecky_Chan():
                     
                     # Parsa il JSON pulito
                     result = json.loads(cleaned_text)
-                    print("🤖 [Cheecky Chan]:")
-                    print(f"   ✅ Analisi completata con successo!")
-                    print(f"   📌 Topic: {result.get('topic', 'N/A')}")
-                    print(f"   🎯 Chiarezza: {result.get('clarity', 'N/A')}")
-                    print(f"   🔍 Intent: {result.get('intent', 'N/A')}")
-                    print(f"   ❓ Richiede chiarimenti: {result.get('requires_clarification', 'N/A')}")
-                    print(f"   📊 Confidence: {result.get('confidence_score', 'N/A')}")
-                    print(f"   ➡️  Valido: {result.get('valid', 'N/A')}")
                     
-                    # Aggiungi timestamp al risultato
-                    result['timestamp'] = datetime.now().isoformat()
-                    
-                    # ESEMPIO DI LOGICA BASATA SUI VALORI
-                    print("\n🤖 [Cheecky Chan]: 🔄 ELABORAZIONE:")
-                    print("-" * 50)
-                    
-                    # Logica basata su requires_clarification
-                    if not(result.get('requires_clarification')) and result.get('valid') and (result.get('confidence_score', 0) > 0.8):
-                        print("   ✅ La richiesta è chiara, posso procedere con l'elaborazione")
-                        return True, result, user_input
-                        
-                    else:
-                        print("   ⚠️ Sono necessari chiarimenti prima di procedere")
-                        print(f"   '{result.get('suggested_question')}'")
-                        return False, result, user_input
+                    write_log.write_log(result,"testarella")
+                    print("🤖 [Testarella] Analisi completata e salvata su file")
+                    return result
+
+                
                     
                 except:
                     pass
                     
                     print(f"   ⚠️ Errore nel parsing del JSON: {e}")
                     print(f"   Risposta raw: {analysis_text[:200]}...")
-                    return False, {'error': 'JSON parsing failed', 'raw_response': analysis_text}, user_input
+                    return None
         else:
             print("   ⚠️ Nessuno stato salvato nella sessione")
             
@@ -139,3 +126,4 @@ async def Cheecky_Chan():
         import traceback
         traceback.print_exc()
         return None
+

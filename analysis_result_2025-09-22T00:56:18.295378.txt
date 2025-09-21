@@ -1,0 +1,7 @@
+Topic: Tests of filter addition on a dbt model
+Chiarezza: clear
+Intent: question
+Richiede chiarimenti: False
+Confidence: 0.95
+Valido: True
+Timestamp: 2025-09-22T00:56:18.294115

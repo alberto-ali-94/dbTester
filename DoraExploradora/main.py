@@ -14,17 +14,17 @@ def Dora_Exploradora(model_id: str, manifest_path: str = 'manifest.json') -> Tup
     input_model_id = model_id
     output_file_name = "lineage.json"
 
-    print(f"[Dora Exploradora]: caricamento modelli in memoria...\n")
+    print(f"🤖 [Dora Exploradora]: caricamento modelli in memoria...\n")
     index = build_model_index(manifest_file_path)
-    print(f"[Dora Exploradora]: 💾 {manifest_path} caricato in memoria con successo!\n")
+    print(f"🤖 [Dora Exploradora]: 💾 {manifest_path} caricato in memoria con successo!\n")
 
     if index:
         full_lineage_list = get_full_lineage(index, input_model_id)
         
         if full_lineage_list is not None:
             
-            print(f"[Dora Exploradora]: ✅ lineage caricato con successo!\n")
-            print(f"[Dora Exploradora]: 📦 salvataggio il lineage in '{output_file_name}'...")
+            print(f"🤖 [Dora Exploradora]: ✅ lineage caricato con successo!\n")
+            print(f"🤖 [Dora Exploradora]: 📦 salvataggio il lineage in '{output_file_name}'...")
 
             try:
                 # Scrittura su file JSON

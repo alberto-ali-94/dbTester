@@ -1,0 +1,12 @@
+Model ID: model.dlh_dm_emea.EDW__OFA_AP_INVOICE
+Test Proposed: Verify that all records in the 'EDW__OFA_AP_INVOICE' model strictly adhere to the new filter condition, meaning the 'COMPANY_CD' column must exclusively contain the value '001' for every row. Any record with a different 'COMPANY_CD' should not be present.
+--------------------------------------------------
+Model ID: model.dlh_dm_emea.EDW__OFA_AP_INVOICE
+Test Proposed: Compare the row count of the 'EDW__OFA_AP_INVOICE' model before and after the change. The new row count should ideally match the count of records that previously had COMPANY_CD = '001'. Also, compare the overall row count before and after to ensure a reduction consistent with filtering out other companies.
+--------------------------------------------------
+Model ID: model.dlh_dm_emea.EDW__OFA_AP_INVOICE
+Test Proposed: Perform a data integrity check on the subset of data where 'COMPANY_CD' is '001'. Compare key metrics (sums of amounts, counts of specific types, etc.) and a sample of individual records for 'company=001' against a baseline taken before the filter was applied, to ensure no other data transformations or corruptions occurred beyond the intended filtering.
+--------------------------------------------------
+Model ID: model.dlh_dm_emea.EDW__OFA_AP_INVOICE
+Test Proposed: Ensure that there are no records with a 'COMPANY_CD' value other than '001' in the 'EDW__OFA_AP_INVOICE' model after the filter has been applied. This confirms the filter is effectively excluding all other companies.
+--------------------------------------------------
