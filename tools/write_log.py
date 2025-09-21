@@ -1,5 +1,6 @@
 from typing import TypedDict
 from datetime import datetime
+import os
 
 class LogEntry(TypedDict):
     topic: str
@@ -11,7 +12,9 @@ class LogEntry(TypedDict):
     timestamp: datetime
 
 def write_log(log: LogEntry, file_name: str = 'log.txt') -> None:
-    with open(file_name, 'a') as f:
+    file_name_datetime = '_'.join(file_name,datetime.now().isoformat())
+    path = os.path.join('logs',file_name_datetime)
+    with open(path, 'a') as f:
         f.write(f"Topic: {log.get('topic', 'N/A')}\n")
         f.write(f"Chiarezza: {log.get('clarity', 'N/A')}\n")
         f.write(f"Intent: {log.get('intent', 'N/A')}\n")
