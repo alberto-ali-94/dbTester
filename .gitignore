@@ -1,0 +1,8 @@
+_dora/
+list.txt
+test.py
+**/__pycache__
+.bashrc
+log.txt
+lineage.json
+manifest**

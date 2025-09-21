@@ -1,13 +1,42 @@
-import ijson
+# This module contains 2 functions:
+#   ->  build_model_index
+#   ->  get_full_lineage
+# ================================= build_model_index =======================================
+#
+# Starting from the provided path of the artifact manifest.json it generate a dictionary
+# containing ONLY the models with all their properties
+#
+# ===========================================================================================
+#
+# ================================= get_full_lineage ========================================
+#
+# Starting from a model id it finds the dependencies backwards and returns a list of all the
+# dependencies (models) found
+#
+# TO DO: find the dependencies forward
+#
+# ===========================================================================================
 import os
+import sys
+try: 
+    import ijson
+except:
+    print(f"""Errore nell'import della libreria ijson.\n
+          Verifica che sia correttamente installato son il comando 'pip show ijson'\n
+          Eventualmente installalo con 'pip install ijson'
+          Puoi anche lanciare il comando 'pip install -r requirements.txt' dalla cartella del progetto\n""")
+    sys.exit(-1)
 
-def build_model_index(manifest_path):
+
+
+
+def build_model_index(manifest_path:str) -> dict:
     """
     Reads the manifest (only one time) and build an in-memory index.
     This function reads the manifest.json received in input and creates an in-memory index with only the model nodes.
     Every element of the index can be referred through model unique id and contains the deps and SQL code for each model
     """
-    print(f"1. Building model inxed from '{manifest_path}'...")
+    print(f"[Dora Exploradora]: 🔍 Caricamento modelli da '{manifest_path}'...\n")
     model_index = {}
     try:
         with open(manifest_path, 'rb') as f:
@@ -23,29 +52,31 @@ def build_model_index(manifest_path):
                         'compiled_code': compiled_code
                     }
     except FileNotFoundError:
-        print(f"ERROR: File not found at '{manifest_path}'")
+        print(f"[Dora Exploradora]: ❌ ERRORE: File non trovato: '{manifest_path}'\n")
         return None
     except ijson.common.IncompleteJSONError as e:
-        print(f"ERROR: Not a valid JSON file: {e}")
+        print(f"[Dora Exploradora]: ❌ ERRORE: File JSON non valido {e}")
         return None
-    print(f"   -> Index built successfully. Found {len(model_index)} models.")
+    print(f"[Dora Exploradora]: 🎯 Indice caricato. Trovati {len(model_index)} modelli dbt.")
     return model_index
 
-def get_full_lineage(model_index, start_model_id):
+def get_full_lineage(model_index: dict, start_model_id: str) -> list:
     """
     Every element of model_index can be referred through model unique id and contains the deps and SQL code for each model.
     This function go through the index "model_index" and finds the full lineage of the given start_model_id
     """
-    print(f"\n2. Elaborating the full lineage for: '{start_model_id}'")
+    print(f"[Dora Exploradora]: 🔍 Elaborazione del lineage per: '{start_model_id}'")
     
     if start_model_id not in model_index:
-        print(f"   -> ERROR: Model '{start_model_id}' not found in the index.")
+        print(f"""[Dora Exploradora]: ❌ ERRORE: Modello '{start_model_id}' non trovato tra quelli disponibili nel 
+              manifest.""")
         return None
 
     # Struttura dati per l'output finale
     lineage_results_list = []
-    #Struttura dati per lo stack dei nodi da esplorare
-    nodes_to_visit = []
+    # Struttura dati per lo stack dei nodi da esplorare. Inserisco in partenza il primo nodo perché voglio che venga 
+    # espanso con il dettaglio del codice SQL
+    nodes_to_visit = [start_model_id]
     #struttura dati per tenere traccia dei nodi già esplorati (evitando di esplorare nodi già esplorati)
     visited_nodes = set()
 
@@ -53,8 +84,6 @@ def get_full_lineage(model_index, start_model_id):
     for dep_id in initial_parents:
         if dep_id.startswith('model.'):
             nodes_to_visit.append(dep_id)
-
-    print(f"   -> Found {len(nodes_to_visit)} parent models. Beginning of the iteration...")
 
     while nodes_to_visit:
         current_model_id = nodes_to_visit.pop()
